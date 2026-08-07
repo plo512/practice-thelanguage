@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#16324D">
+<title>The Language — Phrasing · CAGED · Numbers</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --stone:#ECE7DD; --card:#FBF9F4; --ink:#241C15; --ink2:#6B5D4C;
+    --blue:#2E6CA6; --blueDeep:#1C4C7A; --ember:#E7A93B; --emberDeep:#C8801E;
+    --wood1:#3E2C1D; --bone:#EDE4D0; --line:#DDD3C2;
+    --navH:64px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;}
+  body{background:var(--stone); color:var(--ink); font-family:'Inter',system-ui,sans-serif; line-height:1.5;
+    padding-bottom:calc(var(--navH) + env(safe-area-inset-bottom));}
+  .scroll{max-width:540px; margin:0 auto; padding:max(12px,env(safe-area-inset-top)) 15px 22px;}
+
+  .bar{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:4px 2px 10px;}
+  .title{font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; font-size:24px; letter-spacing:.02em; line-height:1;}
+  .title em{font-style:normal; color:var(--blue); -webkit-text-stroke:.6px var(--blueDeep);}
+  #installBtn{display:none; background:var(--blue); color:#fff; border:none; border-radius:9px; padding:8px 12px;
+    font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; font-size:12px; letter-spacing:.05em; cursor:pointer;}
+
+  h2.sec{font-family:'Oswald',sans-serif; font-weight:600; text-transform:uppercase; font-size:13px; letter-spacing:.14em;
+    margin:20px 0 10px; color:var(--blueDeep); display:flex; align-items:center; gap:8px;}
+  h2.sec::after{content:''; flex:1; height:1.5px; background:var(--line);}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:13px; padding:15px 16px; margin-bottom:11px;
+    box-shadow:0 4px 14px rgba(60,44,29,.05);}
+  p{margin:0 0 10px;} p:last-child{margin-bottom:0;}
+  .lead{font-size:15px;} .muted{color:var(--ink2); font-size:13.5px;}
+  b{font-weight:600;}
+
+  .triad{display:flex; flex-direction:column; gap:9px; margin:4px 0;}
+  .tri{display:flex; gap:12px; align-items:flex-start; padding:12px 13px; border-radius:11px; background:var(--card); border:1px solid var(--line);}
+  .tri .w{flex:0 0 auto; font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; font-size:12px;
+    color:#fff; background:var(--blue); padding:4px 9px; border-radius:7px; letter-spacing:.05em; min-width:64px; text-align:center;}
+  .tri .x b{color:var(--blueDeep);}
+
+  .callout{background:#EAF1F8; border-left:3px solid var(--blue); border-radius:0 9px 9px 0; padding:11px 13px;
+    font-size:13px; color:#1c405f; margin:11px 0;}
+  .callout b{color:#12314a;}
+  .try{background:#FBF3E3; border-left:3px solid var(--ember); border-radius:0 9px 9px 0; padding:9px 12px;
+    font-size:12.5px; color:#6a4d18; margin-top:8px;}
+  .try b{color:#4d3810;}
+
+  .principle{margin-bottom:11px;}
+  .principle .pt{font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; font-size:15px; letter-spacing:.02em; margin-bottom:3px;}
+  .principle .pb{font-size:13.5px; color:var(--ink2);}
+
+  /* chord diagrams */
+  .chordgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:12px; margin:6px 0 4px;}
+  .chord{text-align:center;}
+  .chord .cn{font-family:'Oswald',sans-serif; font-weight:700; font-size:15px; text-transform:uppercase; margin-bottom:3px;}
+  .chord svg{width:100%; height:auto; max-width:110px;}
+  .legendrow{display:flex; gap:16px; align-items:center; font-size:12px; color:var(--ink2); margin:8px 2px 2px;}
+  .legendrow .d{display:inline-flex; align-items:center; gap:6px;}
+  .legendrow .dot{width:15px; height:15px; border-radius:50%;}
+  .lr-root{background:var(--ember); border:2px solid var(--emberDeep);}
+  .lr-note{background:var(--wood1);}
+
+  /* nashville translator */
+  .keys{display:flex; gap:6px; overflow-x:auto; padding:2px 0 9px;}
+  .keychip{flex:0 0 auto; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; padding:8px 11px;
+    border-radius:9px; border:1px solid var(--line); background:var(--card); color:var(--ink2); cursor:pointer;}
+  .keychip.on{background:var(--blue); color:#fff; border-color:var(--blueDeep);}
+  .qseg{display:flex; gap:6px; background:#EFE9DC; border-radius:10px; padding:4px; margin-bottom:12px;}
+  .qseg button{flex:1; border:none; background:none; border-radius:7px; padding:8px; cursor:pointer;
+    font-family:'Oswald',sans-serif; font-weight:600; text-transform:uppercase; font-size:12px; color:var(--ink2); letter-spacing:.04em;}
+  .qseg button.on{background:var(--card); color:var(--blueDeep); box-shadow:0 1px 4px rgba(0,0,0,.08);}
+  .degrees{display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:14px;}
+  .deg{text-align:center; border:1px solid var(--line); border-radius:9px; padding:8px 2px; background:var(--card);}
+  .deg .num{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; color:var(--blueDeep);}
+  .deg .chd{font-family:'Oswald',sans-serif; font-weight:700; font-size:14px; margin-top:2px;}
+  .deg.dim{opacity:.6;}
+  .progs{display:flex; flex-direction:column; gap:8px;}
+  .prog{display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:var(--card);}
+  .prog .pl{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; color:var(--ink2); min-width:78px;}
+  .prog .pc{font-family:'Oswald',sans-serif; font-weight:700; font-size:16px; letter-spacing:.03em; color:var(--blueDeep);}
+  .prog .pc .arw{color:var(--line); margin:0 5px; font-weight:400;}
+
+  nav{position:fixed; bottom:0; left:0; right:0; height:calc(var(--navH) + env(safe-area-inset-bottom));
+    padding-bottom:env(safe-area-inset-bottom); background:var(--card); border-top:1px solid var(--line); display:flex; z-index:10;}
+  nav button{flex:1; background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:3px; color:var(--ink2); padding-top:6px;}
+  nav button .ic{font-size:18px; line-height:1;}
+  nav button .tx{font-family:'Oswald',sans-serif; font-weight:600; text-transform:uppercase; font-size:9.5px; letter-spacing:.05em;}
+  nav button.on{color:var(--blue);} nav button.on .tx{color:var(--blueDeep);}
+</style>
+</head>
+<body>
+<div class="scroll">
+  <div class="bar"><div class="title">The <em>Language</em></div><button id="installBtn">Install</button></div>
+  <div id="view"></div>
+</div>
+<nav id="nav">
+  <button data-t="home" class="on"><span class="ic">⌂</span><span class="tx">Overview</span></button>
+  <button data-t="phrasing"><span class="ic">❝</span><span class="tx">Phrasing</span></button>
+  <button data-t="caged"><span class="ic">▦</span><span class="tx">CAGED</span></button>
+  <button data-t="numbers"><span class="ic">#</span><span class="tx">Numbers</span></button>
+</nav>
+
+<script>
+const view=document.getElementById('view');
+
+/* ================= OVERVIEW ================= */
+function renderHome(){
+  view.innerHTML=`
+    <h2 class="sec">One language, three parts</h2>
+    <div class="card"><p class="lead">These three ideas answer three different questions. Learn them together and you can walk into any song, in any key, and know what to play, where to play it, and how to make it sing.</p></div>
+    <div class="triad">
+      <div class="tri"><span class="w">Numbers</span><div class="x"><b>What chords?</b> The Nashville system names chords by their number in the key, so a progression works in every key at once.</div></div>
+      <div class="tri"><span class="w">CAGED</span><div class="x"><b>Where on the neck?</b> Five movable shapes that map every chord — and every scale around it — across the whole fretboard.</div></div>
+      <div class="tri"><span class="w">Phrasing</span><div class="x"><b>How to say it?</b> The rhythm, space, and expression that turn correct notes into actual music.</div></div>
+    </div>
+    <div class="callout">They chain together: <b>Numbers</b> tell you the chord tones to aim at, <b>CAGED</b> shows you where those tones live, and <b>Phrasing</b> is how you land on them with feeling. Tap through the tabs below in any order.</div>
+  `;
+}
+
+/* ================= PHRASING ================= */
+const PHRASING=[
+  ['Phrasing is punctuation','Music is a language: notes are words, phrasing is how you say them — where you pause, breathe, and lean in. The same notes can sound like a shrug or a shout depending on how they\u2019re phrased.',''],
+  ['Leave space','Silence is part of the phrase. Rests give an idea room to land and give the listener time to feel it. Beginners fill every gap; pros leave holes.','Play a 2-bar lick, then rest a full bar before you answer it. Get comfortable with the silence.'],
+  ['Question and answer','Strong melodies come in pairs — one phrase that asks (ends unresolved, on a tense note) and one that answers (resolves, usually to the root).','Play a phrase ending on the 2nd or 4th of the key, then answer with one ending on the root.'],
+  ['Motif and development','State a small idea, then repeat and reshape it — move it, stretch it, change its rhythm. Repetition is what makes a solo memorable instead of random.','Take a 3-note lick and play it three different ways without adding any new notes.'],
+  ['Rhythmic variety','Don\u2019t run constant 8th notes. Mix long held notes with quick bursts, add syncopation, sit behind the beat. Rhythm carries more of a solo than pitch does.','Solo using only quarter notes and rests for 8 bars. Fewer notes forces better choices.'],
+  ['Target the chord tones','Land on strong notes — the root, 3rd, or 5th of the current chord — on strong beats. Passing notes just connect them. This is exactly where Numbers and CAGED feed your solos.','Over a backing track, aim to hit the chord\u2019s root on beat 1 of every bar. Fill the rest however you like.'],
+  ['Tension and release','A solo is a story with an arc: start low and sparse, build intensity, then resolve. Don\u2019t open at full sprint — you\u2019ll have nowhere to go.',''],
+  ['Say it with your hands','In rock and metal, bends, vibrato, slides and rakes are your inflection. Vibrato is your sustained vowel; a bend is your rising voice. One note with great vibrato beats a fast run with none.','Play a single note and make it sing for 8 seconds with slow, controlled vibrato.'],
+  ['The singing test','If you can\u2019t sing your solo, it probably isn\u2019t phrased. Play like a vocalist who has to breathe between lines — because that breathing is the phrasing.','']
+];
+function renderPhrasing(){
+  view.innerHTML=`
+    <h2 class="sec">Phrasing</h2>
+    <div class="card"><p class="lead">Phrasing is the difference between playing notes and playing <b>music</b>. It\u2019s not which notes you choose — it\u2019s the rhythm, spacing, and expression you wrap them in. Here are the principles that matter most for rock and metal lead.</p></div>
+    ${PHRASING.map(p=>`<div class="card principle"><div class="pt">${p[0]}</div><div class="pb">${p[1]}</div>${p[2]?`<div class="try"><b>Try this:</b> ${p[2]}</div>`:''}</div>`).join('')}
+    <div class="callout">The through-line: <b>fewer notes, said better.</b> Space, repetition, and vibrato will do more for your solos than any amount of speed.</div>
+  `;
+}
+
+/* ================= CAGED ================= */
+// shapes low E -> high e ; 'x' mute, 0 open, int fret ; roots = booleans
+const SHAPES=[
+  {n:'C', frets:['x',3,2,0,1,0], roots:[false,true,false,false,true,false]},
+  {n:'A', frets:['x',0,2,2,2,0], roots:[false,true,false,true,false,false]},
+  {n:'G', frets:[3,2,0,0,0,3],   roots:[true,false,false,true,false,true]},
+  {n:'E', frets:[0,2,2,1,0,0],   roots:[true,false,true,false,false,true]},
+  {n:'D', frets:['x','x',0,2,3,2], roots:[false,false,true,false,true,false]}
+];
+function chordDiagram(sh){
+  const nStr=6, left=16, gap=17, top=20, fret=18, nFret=4;
+  const W=left*2+gap*(nStr-1), H=top+fret*nFret+14;
+  const x=i=>left+i*gap;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${sh.n} shape">`;
+  // fret lines
+  for(let f=0;f<=nFret;f++){ const yy=top+f*fret; const nut=f===0;
+    s+=`<line x1="${x(0)}" y1="${yy}" x2="${x(nStr-1)}" y2="${yy}" stroke="${nut?'#3E2C1D':'#c9bda6'}" stroke-width="${nut?4:1.4}"/>`; }
+  // strings
+  for(let i=0;i<nStr;i++){ s+=`<line x1="${x(i)}" y1="${top}" x2="${x(i)}" y2="${top+fret*nFret}" stroke="#c9bda6" stroke-width="1.4"/>`; }
+  // markers
+  sh.frets.forEach((f,i)=>{
+    if(f==='x'){ s+=`<text x="${x(i)}" y="${top-7}" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="#9a8c78">\u00d7</text>`; }
+    else if(f===0){ s+=`<circle cx="${x(i)}" cy="${top-10}" r="4.2" fill="none" stroke="#6B5D4C" stroke-width="1.6"/>`; }
+    else{ const yy=top+(f-0.5)*fret; const root=sh.roots[i];
+      s+=`<circle cx="${x(i)}" cy="${yy}" r="6.6" fill="${root?'#E7A93B':'#3E2C1D'}" stroke="${root?'#C8801E':'#241C15'}" stroke-width="1.5"/>`; }
+  });
+  s+=`</svg>`; return s;
+}
+function renderCaged(){
+  view.innerHTML=`
+    <h2 class="sec">The CAGED system</h2>
+    <div class="card"><p class="lead">Five open chord shapes — <b>C, A, G, E, D</b> — are movable templates. Slide any one up the neck and it becomes the same chord in a new spot. Stitched together, they map the entire fretboard.</p></div>
+
+    <div class="card">
+      <div class="chordgrid">
+        ${SHAPES.map(sh=>`<div class="chord"><div class="cn">${sh.n} shape</div>${chordDiagram(sh)}</div>`).join('')}
+      </div>
+      <div class="legendrow"><span class="d"><span class="dot lr-root"></span> root note</span><span class="d"><span class="dot lr-note"></span> other chord tone</span><span class="d">○ open · × muted</span></div>
+    </div>
+
+    <h2 class="sec">How it works</h2>
+    <div class="card principle"><div class="pt">The shapes are movable</div><div class="pb">These are the open chords you already know. Barre across and slide them up — the E shape at the 3rd fret is a G chord, at the 5th an A, and so on. Every shape plays every chord somewhere.</div></div>
+    <div class="card principle"><div class="pt">They always link in order</div><div class="pb">Going up the neck, the shapes appear in the fixed sequence C\u2013A\u2013G\u2013E\u2013D, repeating forever. The top of one shape shares notes with the bottom of the next, so they interlock like puzzle pieces.</div></div>
+    <div class="card principle"><div class="pt">Roots are your anchor</div><div class="pb">Each shape carries the chord\u2019s root in known spots (the amber dots above). Decide where you want the root, and the shape falls into place around it.</div></div>
+    <div class="card principle"><div class="pt">Start with E and A</div><div class="pb">The E and A shapes are your barre chords and power-chord roots — you use them constantly already. Nail those two first, then add G, C, and D.</div></div>
+
+    <div class="callout"><b>Why it matters for lead:</b> each CAGED zone has a scale and arpeggio pattern built around it — and those five zones are the exact same five pentatonic boxes from <b>The Neck</b>. CAGED is how you connect those boxes and find your chord tones anywhere, which is what makes the whole neck available for phrasing.</div>
+    <div class="try"><b>Common trap:</b> don\u2019t memorize the shapes as just chords. See the <b>root</b> and the <b>arpeggio</b> inside each one — that\u2019s what actually unlocks the fretboard.</div>
+  `;
+}
+
+/* ================= NASHVILLE NUMBERS ================= */
+const MAJOR_KEYS=['C','G','D','A','E','B','F','B\u266d','E\u266d','A\u266d'];
+const MINOR_KEYS=['Am','Em','Bm','F\u266fm','C\u266fm','Dm','Gm','Cm'];
+const LETTERS=['C','D','E','F','G','A','B'];
+const BASE={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+const MAJ_OFF=[0,2,4,5,7,9,11], MIN_OFF=[0,2,3,5,7,8,10];
+const MAJ_QUAL=['','m','m','','','m','\u00b0'];        // I ii iii IV V vi vii°
+const MIN_QUAL=['m','\u00b0','','m','m','',''];        // i ii° ♭III iv v ♭VI ♭VII
+const MAJ_NUM=['1','2','3','4','5','6','7'];
+const MIN_NUM=['1','2','\u266d3','4','5','\u266d6','\u266d7'];
+const MAJ_PROGS=[['1 \u2013 4 \u2013 5',[0,3,4]],['1 \u2013 5 \u2013 6 \u2013 4',[0,4,5,3]],['6 \u2013 4 \u2013 1 \u2013 5',[5,3,0,4]]];
+const MIN_PROGS=[['1 \u2013 \u266d6 \u2013 \u266d7',[0,5,6]],['1 \u2013 \u266d7 \u2013 \u266d6',[0,6,5]],['1 \u2013 4 \u2013 5',[0,3,4]]];
+
+let nnsKey='G', nnsMinor=false;
+
+function scaleNotes(rootName, offsets){
+  const letter=rootName[0]; const accStr=rootName.slice(1);
+  let accVal=0; if(accStr.includes('\u266f')||accStr.includes('#')) accVal=1; else if(accStr.includes('\u266d')||accStr.toLowerCase().includes('b')) accVal=-1;
+  const rootSemi=((BASE[letter]+accVal)%12+12)%12;
+  const rootLet=LETTERS.indexOf(letter);
+  const out=[];
+  for(let i=0;i<7;i++){
+    const L=LETTERS[(rootLet+i)%7]; const nat=BASE[L];
+    const target=(rootSemi+offsets[i])%12;
+    let diff=((target-nat)%12+12)%12; if(diff>6) diff-=12;
+    const acc=diff===0?'':(diff>0?'\u266f'.repeat(diff):'\u266d'.repeat(-diff));
+    out.push(L+acc);
+  }
+  return out;
+}
+function chordName(note,qual){ return note+qual; }
+function renderNumbers(){
+  const keys = nnsMinor?MINOR_KEYS:MAJOR_KEYS;
+  if(keys.indexOf(nnsKey)<0) nnsKey=nnsMinor?'Em':'G';
+  const rootName = nnsMinor? nnsKey.replace('m','') : nnsKey;
+  const offs = nnsMinor?MIN_OFF:MAJ_OFF;
+  const quals= nnsMinor?MIN_QUAL:MAJ_QUAL;
+  const nums = nnsMinor?MIN_NUM:MAJ_NUM;
+  const progs= nnsMinor?MIN_PROGS:MAJ_PROGS;
+  const notes=scaleNotes(rootName,offs);
+  const chords=notes.map((n,i)=>({num:nums[i], name:chordName(n,quals[i]), dim:quals[i]==='\u00b0'}));
+
+  const degHTML=chords.map(c=>`<div class="deg ${c.dim?'dim':''}"><div class="num">${c.num}</div><div class="chd">${c.name}</div></div>`).join('');
+  const progHTML=progs.map(p=>{
+    const seq=p[1].map(i=>chords[i].name).join('<span class="arw">\u2192</span>');
+    return `<div class="prog"><span class="pl">${p[0]}</span><span class="pc">${seq}</span></div>`;
+  }).join('');
+
+  view.innerHTML=`
+    <h2 class="sec">Nashville Number System</h2>
+    <div class="card"><p class="lead">Name chords by their <b>number in the key</b>, not their letter. A <b>1\u20134\u20135</b> is G\u2013C\u2013D in the key of G, and C\u2013F\u2013G in the key of C — same numbers, any key. Change key and the numbers never change.</p></div>
+
+    <div class="card">
+      <div class="qseg">
+        <button data-q="maj" class="${!nnsMinor?'on':''}">Major key</button>
+        <button data-q="min" class="${nnsMinor?'on':''}">Minor key</button>
+      </div>
+      <div class="keys">${keys.map(k=>`<button class="keychip ${k===nnsKey?'on':''}" data-k="${k}">${k}</button>`).join('')}</div>
+      <div class="degrees">${degHTML}</div>
+      <div class="progs">${progHTML}</div>
+    </div>
+
+    <h2 class="sec">Why it\u2019s worth learning</h2>
+    <div class="card principle"><div class="pt">Transpose instantly</div><div class="pb">The same numbers work in every key. A singer says \u201clet\u2019s take it up to A\u201d and you don\u2019t re-learn a thing — the numbers are identical.</div></div>
+    <div class="card principle"><div class="pt">You hear function</div><div class="pb">The 5 always wants to pull home to the 1; the 4 feels like leaving. Numbers make those pulls obvious in a way letter names hide.</div></div>
+    <div class="card principle"><div class="pt">It\u2019s the studio shorthand</div><div class="pb">Session players chart whole songs in numbers on the spot. It\u2019s the fastest way to write, remember, and communicate a progression.</div></div>
+
+    <div class="callout"><b>Minor keys (metal\u2019s home turf):</b> flip the toggle above to Minor. The 1 becomes the minor tonic, and the classic heavy move is <b>1 \u2013 \u266d6 \u2013 \u266d7</b> — in E minor that\u2019s Em\u2013C\u2013D. Recognise it? It\u2019s everywhere.</div>
+    <div class="try"><b>Slash chords:</b> a number over a number (like <b>1/3</b>, \u201cone over three\u201d) means play the 1 chord with the 3 in the bass — a common way to smooth a bass line between chords.</div>
+
+    <div class="callout" style="background:#EAF1F8;"><b>Full circle:</b> the numbers name the chord tones \u2192 <b>CAGED</b> shows you where those tones sit on the neck \u2192 <b>phrasing</b> is how you land on them. That\u2019s the whole language.</div>
+  `;
+  document.querySelectorAll('.qseg button').forEach(b=>b.onclick=()=>{ nnsMinor=b.dataset.q==='min'; nnsKey=nnsMinor?'Em':'G'; renderNumbers(); });
+  document.querySelectorAll('.keychip').forEach(b=>b.onclick=()=>{ nnsKey=b.dataset.k; renderNumbers(); });
+}
+
+/* ================= NAV ================= */
+const R={home:renderHome, phrasing:renderPhrasing, caged:renderCaged, numbers:renderNumbers};
+function go(t){ document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t)); R[t](); window.scrollTo(0,0); }
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.t));
+
+/* ================= PWA ================= */
+if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+let dp=null; const ib=document.getElementById('installBtn');
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); dp=e; ib.style.display='inline-block'; });
+ib.addEventListener('click',async()=>{ if(!dp) return; dp.prompt(); await dp.userChoice; dp=null; ib.style.display='none'; });
+window.addEventListener('appinstalled',()=>{ ib.style.display='none'; });
+
+go('home');
+</script>
+</body>
+</html>
