@@ -87,6 +87,8 @@
   .prog .pc{font-family:'Oswald',sans-serif; font-weight:700; font-size:16px; letter-spacing:.03em; color:var(--blueDeep);}
   .prog .pc .arw{color:var(--line); margin:0 5px; font-weight:400;}
 
+  .wheelwrap svg{width:100%; height:auto; display:block; max-width:360px; margin:0 auto;}
+  .wseg{cursor:pointer;} .wseg:active{opacity:.85;}
   nav{position:fixed; bottom:0; left:0; right:0; height:calc(var(--navH) + env(safe-area-inset-bottom));
     padding-bottom:env(safe-area-inset-bottom); background:var(--card); border-top:1px solid var(--line); display:flex; z-index:10;}
   nav button{flex:1; background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center;
@@ -106,6 +108,7 @@
   <button data-t="phrasing"><span class="ic">❝</span><span class="tx">Phrasing</span></button>
   <button data-t="caged"><span class="ic">▦</span><span class="tx">CAGED</span></button>
   <button data-t="numbers"><span class="ic">#</span><span class="tx">Numbers</span></button>
+  <button data-t="circle"><span class="ic">⊙</span><span class="tx">Circle</span></button>
 </nav>
 
 <script>
@@ -273,8 +276,62 @@ function renderNumbers(){
   document.querySelectorAll('.keychip').forEach(b=>b.onclick=()=>{ nnsKey=b.dataset.k; renderNumbers(); });
 }
 
+/* ================= CIRCLE OF FIFTHS ================= */
+const CIRCLE_MAJ=['C','G','D','A','E','B','F\u266f','D\u266d','A\u266d','E\u266d','B\u266d','F'];
+const CIRCLE_MIN=['Am','Em','Bm','F\u266fm','C\u266fm','G\u266fm','D\u266fm','B\u266dm','Fm','Cm','Gm','Dm'];
+let circleSel=0;
+function renderCircle(){
+  const maj=CIRCLE_MAJ, min=CIRCLE_MIN;
+  const s=circleSel, i5=(s+1)%12, i4=(s+11)%12;
+  const cx=160, cy=160, Ro=134, Rm=100, Ri=70, badgeR=150;
+  const lblMaj=(Ro+Rm)/2, lblMin=(Rm+Ri)/2;
+  const xy=(r,deg)=>{ const rad=(deg-90)*Math.PI/180; return [cx+r*Math.cos(rad), cy+r*Math.sin(rad)]; };
+  const sector=(rIn,rOut,a0,a1)=>{ const [x1,y1]=xy(rOut,a0),[x2,y2]=xy(rOut,a1),[x3,y3]=xy(rIn,a1),[x4,y4]=xy(rIn,a0); const lg=(a1-a0)>180?1:0;
+    return `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${rOut} ${rOut} 0 ${lg} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} L ${x3.toFixed(2)} ${y3.toFixed(2)} A ${rIn} ${rIn} 0 ${lg} 0 ${x4.toFixed(2)} ${y4.toFixed(2)} Z`; };
+  let svg=`<svg viewBox="0 0 320 320" role="img" aria-label="circle of fifths, key of ${maj[s]}">`;
+  for(let i=0;i<12;i++){
+    const c=i*30, a0=c-15, a1=c+15;
+    let fill='var(--card)', tcol='var(--ink)', fw='600';
+    if(i===s){ fill='#2E6CA6'; tcol='#fff'; fw='700'; }
+    else if(i===i5){ fill='#5E8FBF'; tcol='#fff'; }
+    else if(i===i4){ fill='#8FB2D4'; tcol='#fff'; }
+    svg+=`<path d="${sector(Rm,Ro,a0,a1)}" fill="${fill}" stroke="#DDD3C2" stroke-width="1" class="wseg" data-i="${i}"/>`;
+    const [lx,ly]=xy(lblMaj,c);
+    svg+=`<text x="${lx.toFixed(1)}" y="${(ly+5).toFixed(1)}" text-anchor="middle" font-family="'Oswald',sans-serif" font-weight="${fw}" font-size="16" fill="${tcol}" pointer-events="none">${maj[i]}</text>`;
+    const ifill=(i===s)?'#F4E4C1':'#F3EFE7';
+    svg+=`<path d="${sector(Ri,Rm,a0,a1)}" fill="${ifill}" stroke="#E4DAC6" stroke-width="1" class="wseg" data-i="${i}"/>`;
+    const [mx,my]=xy(lblMin,c);
+    svg+=`<text x="${mx.toFixed(1)}" y="${(my+4).toFixed(1)}" text-anchor="middle" font-family="'Inter',sans-serif" font-weight="600" font-size="11" fill="#6B5D4C" pointer-events="none">${min[i]}</text>`;
+    let badge=null,bc=null;
+    if(i===s){ badge='1'; bc='#1C4C7A'; } else if(i===i5){ badge='5'; bc='#3f6f9f'; } else if(i===i4){ badge='4'; bc='#6f97bd'; }
+    if(badge){ const [bx,by]=xy(badgeR,c);
+      svg+=`<circle cx="${bx.toFixed(1)}" cy="${by.toFixed(1)}" r="11" fill="${bc}"/><text x="${bx.toFixed(1)}" y="${(by+4).toFixed(1)}" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-weight="700" font-size="12" fill="#fff" pointer-events="none">${badge}</text>`; }
+  }
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${Ri-2}" fill="var(--card)" stroke="#E4DAC6"/>`;
+  svg+=`<text x="${cx}" y="${cy-14}" text-anchor="middle" font-family="'Oswald',sans-serif" font-weight="700" font-size="17" fill="var(--ink)">${maj[s]} major</text>`;
+  svg+=`<text x="${cx}" y="${cy+7}" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-weight="700" font-size="12" fill="var(--blueDeep)">4 ${maj[i4]}   5 ${maj[i5]}</text>`;
+  svg+=`<text x="${cx}" y="${cy+25}" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6B5D4C">rel. minor (6) \u00b7 ${min[s]}</text>`;
+  svg+=`</svg>`;
+  const sharps=s<=6?s:0, flats=s>6?12-s:0;
+  let sig; if(s===0) sig='no sharps or flats'; else if(s===6) sig='6 sharps (F\u266f) / 6 flats (G\u266d)';
+    else if(sharps) sig=sharps+(sharps>1?' sharps':' sharp'); else sig=flats+(flats>1?' flats':' flat');
+  view.innerHTML=`
+    <h2 class="sec">The Circle of Fifths</h2>
+    <div class="card"><p class="lead">Tap any key. The circle arranges all twelve keys by fifths, so every key sits between its two closest relatives — and those neighbours are exactly your <b>4</b> and <b>5</b>.</p></div>
+    <div class="card wheelwrap">${svg}</div>
+    <div class="callout"><b>${maj[s]} major:</b> the <b>4</b> is <b>${maj[i4]}</b> (one step anticlockwise) and the <b>5</b> is <b>${maj[i5]}</b> (one step clockwise) — ${maj[s]}\u2019s two nearest neighbours. That\u2019s why <b>1&nbsp;\u2013&nbsp;4&nbsp;\u2013&nbsp;5</b> sounds settled in every key. Key signature: <b>${sig}</b>.</div>
+
+    <h2 class="sec">How it ties to the numbers</h2>
+    <div class="card principle"><div class="pt">Your 4 and 5 are the neighbours</div><div class="pb">The tonic\u2019s closest relatives on the circle are the chords a fifth above (the 5) and a fifth below (the 4). Neighbouring keys share the most notes, so 1\u20134\u20135 is the most closely-knit trio you can play.</div></div>
+    <div class="card principle"><div class="pt">The 5 pulls home to the 1</div><div class="pb">The strongest resolution in music is a drop of a fifth \u2014 exactly one step around the wheel. That\u2019s why the 5 wants to fall back to the 1, and why longer progressions like <b>2\u20135\u20131</b> and <b>6\u20132\u20135\u20131</b> just walk around the circle a step at a time.</div></div>
+    <div class="card principle"><div class="pt">Why numbers transpose so cleanly</div><div class="pb">Adjacent keys differ by only one sharp or flat, so moving to your 4 or 5 is the smoothest possible key change. The letters shift, but the numbers \u2014 and the shapes of the chords around the tonic \u2014 stay put.</div></div>
+    <div class="try"><b>Try this:</b> pick a key above, jump to the <b>Numbers</b> tab in the same key, and watch the 1, 4, and 5 line up with the three highlighted wedges.</div>
+  `;
+  document.querySelectorAll('.wseg').forEach(p=>p.onclick=()=>{ circleSel=+p.dataset.i; renderCircle(); });
+}
+
 /* ================= NAV ================= */
-const R={home:renderHome, phrasing:renderPhrasing, caged:renderCaged, numbers:renderNumbers};
+const R={home:renderHome, phrasing:renderPhrasing, caged:renderCaged, numbers:renderNumbers, circle:renderCircle};
 function go(t){ document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t)); R[t](); window.scrollTo(0,0); }
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.t));
 
